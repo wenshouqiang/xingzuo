@@ -1,10 +1,20 @@
 import axios from 'axios'
 
 // 创建 axios 实例
+// const request = axios.create({
+//   baseURL: '/api',  // 开发时会被 vite 代理到后端，生产环境需配置
+//   timeout: 10000
+// })
+// 判断当前是否为生产环境
+const isProduction = import.meta.env.PROD;
+const baseURL = isProduction 
+  ? 'https://你的后端域名.com/api'   // 部署后替换为实际后端地址
+  : '/api';
+
 const request = axios.create({
-  baseURL: '/api',  // 开发时会被 vite 代理到后端，生产环境需配置
+  baseURL,
   timeout: 10000
-})
+});
 
 // 请求拦截器：自动添加 token
 request.interceptors.request.use(

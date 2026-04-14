@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心理测试管理后台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1e1e2f;
+            padding: 20px;
+            color: #e0e0e0;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .header {
+            background: #2a2a3a;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .login-area {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .login-area input {
+            padding: 8px 14px;
+            border: 1px solid #4a4a5a;
+            border-radius: 8px;
+            background: #1e1e2f;
+            color: #e0e0e0;
+        }
+        button {
+            padding: 8px 16px;
+            background: #4a6fa5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        button:hover {
+            background: #6c8fc7;
+            transform: translateY(-1px);
+        }
+        .logout-btn {
+            background: #a54a4a;
+        }
+        .logout-btn:hover {
+            background: #c76c6c;
+        }
+        .user-card {
+            background: #2a2a3a;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+        }
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: #323248;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+        }
+        .user-header:hover {
+            background: #3a3a52;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .user-details h3 {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+        .user-details p {
+            font-size: 12px;
+            color: #aaa;
+        }
+        .user-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .unlock-all-btn {
+            background: #52c41a;
+            padding: 6px 14px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .unlock-all-btn:hover {
+            background: #73d13d;
+        }
+        .expand-icon {
+            font-size: 20px;
+            transition: transform 0.2s;
+            color: #aaa;
+        }
+        .user-card.expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+        .records-list {
+            display: none;
+            border-top: 1px solid #4a4a5a;
+            background: #1e1e2f;
+        }
+        .user-card.expanded .records-list {
+            display: block;
+        }
+        .record-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px 14px 60px;
+            border-bottom: 1px solid #3a3a4a;
+            transition: background 0.2s;
+        }
+        .record-item:last-child {
+            border-bottom: none;
+        }
+        .record-item:hover {
+            background: #2a2a3a;
+        }
+        .record-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: baseline;
+        }
+        .record-test {
+            font-weight: 500;
+            color: #ffd966;
+        }
+        .record-mbti {
+            background: #4a6fa5;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        .record-score {
+            font-size: 13px;
+            color: #ccc;
+        }
+        .record-date {
+            font-size: 12px;
+            color: #888;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-paid {
+            background: #1f5a2e;
+            color: #95de64;
+        }
+        .status-unpaid {
+            background: #7a2e2e;
+            color: #ffa39e;
+        }
+        .unlock-single-btn, .delete-single-btn {
+            padding: 4px 12px;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+        .unlock-single-btn {
+            background: #52c41a;
+        }
+        .delete-single-btn {
+            background: #d4380d;
+        }
+        .delete-single-btn:hover {
+            background: #e8603a;
+        }
+        .loading, .empty {
+            text-align: center;
+            padding: 40px;
+            color: #aaa;
+        }
+        .filter-bar {
+            background: #2a2a3a;
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .filter-bar input {
+            padding: 6px 12px;
+            border: 1px solid #4a4a5a;
+            border-radius: 6px;
+            background: #1e1e2f;
+            color: #e0e0e0;
+        }
+        .filter-bar button {
+            background: #4a6fa5;
+            padding: 6px 16px;
+        }
+        .info-tip {
+            background: #2a2a3a;
+            border-left: 4px solid #ffd966;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #ffd966;
+        }
+        .stat-summary {
+            background: #2a2a3a;
+            border-radius: 12px;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        .stat-summary span {
+            font-size: 14px;
+        }
+        .stat-summary strong {
+            color: #ffd966;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🔮 心理测试管理后台</h1>
+        <div id="authArea" class="login-area">
+            <input type="password" id="passwordInput" placeholder="管理密码" />
+            <button id="loginBtn">登录</button>
+        </div>
+    </div>
+
+    <div id="content" style="display: none;">
+        <div class="info-tip">
+            💡 提示：按用户分组，点击用户栏可展开/折叠。<br>
+            🔓 未解锁记录靠前显示，已解锁记录靠后。可单独解锁或删除已解锁记录。
+        </div>
+        <div class="filter-bar">
+            <span>🔍 筛选：</span>
+            <input type="text" id="filterEmail" placeholder="用户邮箱" />
+            <button id="filterBtn">搜索</button>
+            <button id="resetBtn">重置</button>
+            <button id="refreshBtn" style="background: #52c41a;">🔄 刷新</button>
+        </div>
+        <div id="statsContainer" class="stat-summary"></div>
+        <div id="usersContainer">
+            <div class="loading">加载中...</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let token = '';
+    let allUsers = [];
+
+    const authArea = document.getElementById('authArea');
+    const contentDiv = document.getElementById('content');
+    const passwordInput = document.getElementById('passwordInput');
+    const loginBtn = document.getElementById('loginBtn');
+
+    // 登录
+    loginBtn.addEventListener('click', async () => {
+        const pwd = passwordInput.value;
+        if (!pwd) return alert('请输入密码');
+        try {
+            const res = await fetch('/api/admin/users-with-records', {
+                headers: { 'x-admin-password': pwd }
+            });
+            if (res.status === 401) {
+                alert('密码错误');
+                return;
+            }
+            if (!res.ok) {
+                alert('服务器错误');
+                return;
+            }
+            token = pwd;
+            authArea.innerHTML = `
+                <span style="color: #52c41a;">✅ 已登录</span>
+                <button id="logoutBtn" class="logout-btn">退出</button>
+            `;
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                token = '';
+                authArea.innerHTML = `
+                    <input type="password" id="passwordInput" placeholder="管理密码" />
+                    <button id="loginBtn">登录</button>
+                `;
+                contentDiv.style.display = 'none';
+                document.getElementById('loginBtn').addEventListener('click', arguments.callee);
+            });
+            contentDiv.style.display = 'block';
+            loadData();
+        } catch (err) {
+            alert('网络错误');
+        }
+    });
+
+    async function loadData() {
+        const container = document.getElementById('usersContainer');
+        container.innerHTML = '<div class="loading">加载中...</div>';
+        try {
+            const res = await fetch('/api/admin/users-with-records', {
+                headers: { 'x-admin-password': token }
+            });
+            if (!res.ok) throw new Error();
+            allUsers = await res.json();
+            renderStats();
+            renderUsers(allUsers);
+        } catch (err) {
+            container.innerHTML = '<div class="loading">加载失败，请刷新重试</div>';
+        }
+    }
+
+    function renderStats() {
+        const statsDiv = document.getElementById('statsContainer');
+        let totalUsers = allUsers.length;
+        let totalUnpaid = 0;
+        let totalPaid = 0;
+        for (const user of allUsers) {
+            totalUnpaid += user.records.filter(r => !r.is_paid).length;
+            totalPaid += user.records.filter(r => r.is_paid).length;
+        }
+        statsDiv.innerHTML = `
+            <span><strong>👥 用户数：</strong>${totalUsers}</span>
+            <span><strong>🔓 未解锁记录：</strong>${totalUnpaid}</span>
+            <span><strong>✅ 已解锁记录：</strong>${totalPaid}</span>
+        `;
+    }
+
+    function renderUsers(users) {
+        const container = document.getElementById('usersContainer');
+        if (!users.length) {
+            container.innerHTML = '<div class="empty">暂无用户数据</div>';
+            return;
+        }
+        let html = '';
+        for (const user of users) {
+            // 排序：未解锁在前，已解锁在后
+            const sortedRecords = [...user.records].sort((a, b) => a.is_paid - b.is_paid);
+            const userEmail = user.email || '未登录用户';
+            const initial = userEmail === '未登录用户' ? '👤' : userEmail.charAt(0).toUpperCase();
+            const unpaidCount = sortedRecords.filter(r => !r.is_paid).length;
+            html += `
+                <div class="user-card" data-user-id="${user.user_id || 'null'}">
+                    <div class="user-header">
+                        <div class="user-info">
+                            <div class="user-avatar">${escapeHtml(initial)}</div>
+                            <div class="user-details">
+                                <h3>${escapeHtml(userEmail)}</h3>
+                               <p>${sortedRecords.length} 次测试 · 
+                                     ${unpaidCount > 0 ? `<span style="color: #ff6b6b; font-weight: bold;">${unpaidCount} 条未解锁</span>` : `${unpaidCount} 条未解锁`}
+                            </p>
+                            </div>
+                        </div>
+                        <div class="user-actions">
+                            ${unpaidCount > 0 ? `<button class="unlock-all-btn" data-user-id="${user.user_id || 'null'}">🔓 全部解锁</button>` : ''}
+                            <span class="expand-icon">▼</span>
+                        </div>
+                    </div>
+                    <div class="records-list">
+                        ${sortedRecords.map(record => {
+                            const recordHtml = `
+                                <div class="record-item" data-response-id="${record.responseId}">
+                                    <div class="record-info">
+                                        <span class="record-test">${escapeHtml(record.test_name || '未知测试')}</span>
+                                        ${record.mbti_type ? `<span class="record-mbti">${record.mbti_type}</span>` : ''}
+                                        <span class="record-score">得分: ${record.score}</span>
+                                        <span class="record-date">${new Date(record.created_at).toLocaleString()}</span>
+                                        <span class="status-badge ${record.is_paid ? 'status-paid' : 'status-unpaid'}">${record.is_paid ? '已解锁' : '未解锁'}</span>
+                                    </div>
+                                    <div>
+                                        ${!record.is_paid ? `<button class="unlock-single-btn" data-response-id="${record.responseId}">解锁</button>` : ''}
+                                        ${record.is_paid ? `<button class="delete-single-btn" data-response-id="${record.responseId}">删除</button>` : ''}
+                                    </div>
+                                </div>
+                            `;
+                            return recordHtml;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        container.innerHTML = html;
+
+        // 绑定折叠事件
+        document.querySelectorAll('.user-header').forEach(header => {
+            header.addEventListener('click', (e) => {
+                if (e.target.closest('.unlock-all-btn')) return;
+                const card = header.closest('.user-card');
+                card.classList.toggle('expanded');
+            });
+        });
+
+        // 全部解锁
+        document.querySelectorAll('.unlock-all-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const userId = btn.getAttribute('data-user-id');
+                if (!confirm('确认解锁该用户所有未解锁的报告吗？')) return;
+                await unlockUserAll(userId);
+            });
+        });
+
+        // 单个解锁
+        document.querySelectorAll('.unlock-single-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const responseId = btn.getAttribute('data-response-id');
+                if (!confirm('确认解锁这条报告吗？')) return;
+                await unlockSingle(responseId);
+            });
+        });
+
+        // 删除（仅已解锁）
+        document.querySelectorAll('.delete-single-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const responseId = btn.getAttribute('data-response-id');
+                if (!confirm('⚠️ 删除后将无法恢复，确认删除这条已解锁报告吗？')) return;
+                await deleteRecord(responseId);
+            });
+        });
+    }
+
+    async function unlockUserAll(userId) {
+        const user = allUsers.find(u => String(u.user_id) === userId);
+        if (!user) return;
+        const unpaidIds = user.records.filter(r => !r.is_paid).map(r => r.responseId);
+        if (unpaidIds.length === 0) return;
+        let successCount = 0;
+        for (const id of unpaidIds) {
+            const ok = await unlockSingle(id, true);
+            if (ok) successCount++;
+        }
+        alert(`已解锁 ${successCount} 条报告`);
+        loadData();
+    }
+
+    async function unlockSingle(responseId, silent = false) {
+        try {
+            const res = await fetch('/api/admin/unlock', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-admin-password': token
+                },
+                body: JSON.stringify({ responseId: parseInt(responseId) })
+            });
+            const result = await res.json();
+            if (result.success) {
+                if (!silent) alert('解锁成功');
+                return true;
+            } else {
+                if (!silent) alert('解锁失败：' + (result.error || '未知错误'));
+                return false;
+            }
+        } catch (err) {
+            if (!silent) alert('网络错误');
+            return false;
+        }
+    }
+
+    async function deleteRecord(responseId) {
+        try {
+            const res = await fetch(`/api/admin/delete/${responseId}`, {
+                method: 'DELETE',
+                headers: { 'x-admin-password': token }
+            });
+            const result = await res.json();
+            if (result.success) {
+                alert('删除成功');
+                loadData();
+            } else {
+                alert('删除失败：' + (result.error || '未知错误'));
+            }
+        } catch (err) {
+            alert('网络错误');
+        }
+    }
+
+    // 筛选
+    document.getElementById('filterBtn').addEventListener('click', () => {
+        const emailFilter = document.getElementById('filterEmail').value.trim().toLowerCase();
+        let filtered = allUsers;
+        if (emailFilter) {
+            filtered = filtered.filter(u => (u.email || '').toLowerCase().includes(emailFilter));
+        }
+        renderUsers(filtered);
+    });
+    document.getElementById('resetBtn').addEventListener('click', () => {
+        document.getElementById('filterEmail').value = '';
+        renderUsers(allUsers);
+    });
+    document.getElementById('refreshBtn').addEventListener('click', () => {
+        loadData();
+    });
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+</script>
+</body>
+</html>

@@ -12,31 +12,23 @@ import NavBar from './components/NavBar.vue'
 </script>
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@import './assets/main.css';
+
+#app {
+  min-height: 100vh;
+  width: 100%;
 }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background: #f5f7fa;
-  color: #333;
-}
+
 main {
-  max-width: 800px;
-  margin: 20px auto;
-  padding: 0 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 20px 40px;
+  min-height: calc(100vh - 60px);
 }
-button {
-  background: #42b883;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-}
-button:hover {
-  background: #33a06f;
+
+@media (max-width: 768px) {
+  main {
+    padding: 70px 16px 30px;
+  }
 }
 </style>
